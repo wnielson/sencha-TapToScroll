@@ -35,6 +35,17 @@ Ext.define('Ext.ux.plugin.TapToScroll', {
     extend: 'Ext.Base',
     alias: 'plugin.taptoscroll',
 
+    mixins: {
+        observable: 'Ext.mixin.Observable'
+    },
+
+    /**
+     *  @event scroll
+     *  @preventable doScroll
+     *  Fires whenever a ``tapEvent`` has been detected.
+     *
+     */
+
     config: {
         /**
          *  @cfg {String/Function} tapSelector A string defining the child element which
@@ -105,10 +116,14 @@ Ext.define('Ext.ux.plugin.TapToScroll', {
 
             if (tapElement) {
                 Ext.each(tapEvent, function(eventName) {
-                    tapElement.element.on(eventName, me.doScroll, me);
+                    tapElement.element.on(eventName, me.handleScroll, me);
                 });
             }
         });   
+    },
+
+    handleScroll: function() {
+        this.fireAction('scroll', [this], 'doScroll');
     },
 
     doScroll: function() {
@@ -117,9 +132,19 @@ Ext.define('Ext.ux.plugin.TapToScroll', {
             scrollable  = this.component.getScrollable(),
             scroller;
 
+        if (!scrollable) {
+            // Try to get the scrollable for the active item instead
+            activeItem = this.component.getActiveItem();
+
+            if (activeItem && Ext.isFunction(activeItem.getScrollable)) {
+                scrollable = activeItem.getScrollable();
+            }
+        }
+
         if (scrollable) {
             scroller = scrollable.getScroller();
             scroller.scrollTo(scrollTo.x, scrollTo.y, animation);
         }
     }
 });
+
