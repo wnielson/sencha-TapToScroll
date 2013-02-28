@@ -1,0 +1,7 @@
+sencha-TapToScroll
+==================
+
+This is a pathetically simple plugin that makes it easy to add 
+functionality like "scroll to top on double-tap of toolbar".
+
+See the component for more details and example usage.
